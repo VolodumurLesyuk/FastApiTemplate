@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete
@@ -18,6 +19,13 @@ class BaseDAO:
     async def find_one_or_none_by_id(cls, data_id: int):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=data_id)
+            result = await session.execute(query)
+            return result.scalar_one_or_none()
+
+    @classmethod
+    async def find_one_or_none(cls, email: str):
+        async with async_session_maker() as session:
+            query = select(cls.model).filter_by(email=email)
             result = await session.execute(query)
             return result.scalar_one_or_none()
 
